@@ -1,12 +1,7 @@
 const express = require('express');
 const cors = require('cors');
-const dotenv = require('dotenv');
+require('dotenv').config();
 const stripe = require('stripe')(process.env.PAYMENT_GATEWAY_KEY);
-
-dotenv.config()
-
-
-
 const app = express();
 const port = process.env.PORT || 3000;
 
