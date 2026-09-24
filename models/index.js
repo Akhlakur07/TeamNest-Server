@@ -9,4 +9,5 @@ module.exports = {
   Payment: require('./Payment'),
   Transaction: require('./Transaction'),
   Invitation: require('./Invitation'),
+  WebhookLog: require('./WebhookLog'),
 };

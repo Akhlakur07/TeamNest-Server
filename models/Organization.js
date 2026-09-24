@@ -18,6 +18,7 @@ const organizationSchema = new mongoose.Schema(
     stripeSubscriptionId: { type: String, sparse: true },
     checkoutSessionId: { type: String, sparse: true },
     signupDate: { type: Date, default: Date.now },
+    activatedAt: { type: Date, default: null },
     suspendedAt: { type: Date, default: null },
     maxMembers: { type: Number, default: 50, min: 1 },
   },

@@ -8,7 +8,13 @@ const errorHandler = require('./middleware/errorHandler');
 const app = express();
 
 app.use(cors({ origin: env.FRONTEND_URL }));
-app.use(express.json());
+app.use(
+  express.json({
+    verify: (req, res, buf) => {
+      req.rawBody = buf;
+    },
+  })
+);
 
 app.get('/', (req, res) => {
   res.send('TeamNest API is running');
