@@ -1,7 +1,8 @@
 const admin = require('../config/firebaseAdmin');
 const ApiError = require('../utils/ApiError');
 const { getAppUserByFirebase } = require('../services/authService');
-const { USER_STATUS } = require('../models/enums');
+const { Organization } = require('../models');
+const { USER_STATUS, ORG_STATUS } = require('../models/enums');
 
 async function authenticate(req, res, next) {
   try {
@@ -30,6 +31,13 @@ async function authenticate(req, res, next) {
 
     if (user.status === USER_STATUS.SUSPENDED) {
       throw new ApiError(403, 'This account has been suspended');
+    }
+
+    if (user.orgId) {
+      const org = await Organization.findById(user.orgId);
+      if (org && org.status === ORG_STATUS.SUSPENDED) {
+        throw new ApiError(403, 'Your organization has been suspended');
+      }
     }
 
     req.user = { uid: decoded.uid, email: decoded.email };
