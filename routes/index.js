@@ -9,6 +9,7 @@ router.get('/health', (req, res) => {
 router.use('/auth', require('./auth'));
 router.use('/plans', require('./plans'));
 router.use('/billing', require('./billing'));
+router.use('/members', require('./members'));
 router.use('/webhooks', require('./webhooks'));
 
 module.exports = router;

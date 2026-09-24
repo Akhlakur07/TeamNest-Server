@@ -21,4 +21,6 @@ async function request(method, path, body, token) {
 module.exports = {
   get: (path, token) => request('GET', path, null, token),
   post: (path, body, token) => request('POST', path, body, token),
+  patch: (path, body, token) => request('PATCH', path, body, token),
+  delete: (path, token) => request('DELETE', path, null, token),
 };

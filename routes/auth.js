@@ -1,7 +1,7 @@
 const { Router } = require('express');
 const rateLimit = require('express-rate-limit');
 const authenticate = require('../middleware/authenticate');
-const { login, me, resetPassword } = require('../controllers/authController');
+const { login, me, resetPassword, join } = require('../controllers/authController');
 const {
   register,
   retryCheckout,
@@ -37,6 +37,7 @@ const registerLimiter = rateLimit({
 router.post('/login', loginLimiter, login);
 router.post('/password-reset', resetLimiter, resetPassword);
 router.post('/register', registerLimiter, register);
+router.post('/join', registerLimiter, join);
 router.post('/retry-checkout', authenticate, registerLimiter, retryCheckout);
 router.get('/registration-status', authenticate, registrationStatus);
 router.get('/me', authenticate, me);

@@ -166,3 +166,176 @@ Firebase Admin initialized
 Firebase Admin initialized
 MongoDB connected: ac-fpmffvs-shard-00-00.is98bs1.mongodb.net/teamnest
 TeamNest API listening on port 5000
+[32m[nodemon] restarting due to changes...[39m
+[32m[nodemon] starting `node index.js`[39m
+Firebase Admin initialized
+MongoDB connected: ac-fpmffvs-shard-00-00.is98bs1.mongodb.net/teamnest
+TeamNest API listening on port 5000
+[32m[nodemon] restarting due to changes...[39m
+[32m[nodemon] starting `node index.js`[39m
+Firebase Admin initialized
+MongoDB connected: ac-fpmffvs-shard-00-00.is98bs1.mongodb.net/teamnest
+TeamNest API listening on port 5000
+[32m[nodemon] restarting due to changes...[39m
+[32m[nodemon] starting `node index.js`[39m
+Firebase Admin initialized
+[32m[nodemon] restarting due to changes...[39m
+[32m[nodemon] starting `node index.js`[39m
+Firebase Admin initialized
+MongoDB connected: ac-fpmffvs-shard-00-00.is98bs1.mongodb.net/teamnest
+TeamNest API listening on port 5000
+[32m[nodemon] restarting due to changes...[39m
+[32m[nodemon] starting `node index.js`[39m
+Firebase Admin initialized
+MongoDB connected: ac-fpmffvs-shard-00-00.is98bs1.mongodb.net/teamnest
+TeamNest API listening on port 5000
+[32m[nodemon] restarting due to changes...[39m
+[32m[nodemon] starting `node index.js`[39m
+Firebase Admin initialized
+[32m[nodemon] restarting due to changes...[39m
+[32m[nodemon] starting `node index.js`[39m
+Firebase Admin initialized
+[32m[nodemon] restarting due to changes...[39m
+[32m[nodemon] starting `node index.js`[39m
+Firebase Admin initialized
+[32m[nodemon] restarting due to changes...[39m
+[32m[nodemon] starting `node index.js`[39m
+Firebase Admin initialized
+D:\New Projects\TeamNest\teamnest-back\controllers\memberController.js:199
+  listMembers,
+  ^
+
+ReferenceError: listMembers is not defined
+    at Object.<anonymous> (D:\New Projects\TeamNest\teamnest-back\controllers\memberController.js:199:3)
+    at Module._compile (node:internal/modules/cjs/loader:1830:14)
+    at Object..js (node:internal/modules/cjs/loader:1961:10)
+    at Module.load (node:internal/modules/cjs/loader:1553:32)
+    at Module._load (node:internal/modules/cjs/loader:1355:12)
+    at wrapModuleLoad (node:internal/modules/cjs/loader:255:19)
+    at Module.require (node:internal/modules/cjs/loader:1576:12)
+    at require (node:internal/modules/helpers:153:16)
+    at Object.<anonymous> (D:\New Projects\TeamNest\teamnest-back\routes\members.js:5:17)
+    at Module._compile (node:internal/modules/cjs/loader:1830:14)
+
+Node.js v24.15.0
+[31m[nodemon] app crashed - waiting for file changes before starting...[39m
+[32m[nodemon] restarting due to changes...[39m
+[32m[nodemon] starting `node index.js`[39m
+Firebase Admin initialized
+D:\New Projects\TeamNest\teamnest-back\controllers\memberController.js:199
+  listMembers,
+  ^
+
+ReferenceError: listMembers is not defined
+    at Object.<anonymous> (D:\New Projects\TeamNest\teamnest-back\controllers\memberController.js:199:3)
+    at Module._compile (node:internal/modules/cjs/loader:1830:14)
+    at Object..js (node:internal/modules/cjs/loader:1961:10)
+    at Module.load (node:internal/modules/cjs/loader:1553:32)
+    at Module._load (node:internal/modules/cjs/loader:1355:12)
+    at wrapModuleLoad (node:internal/modules/cjs/loader:255:19)
+    at Module.require (node:internal/modules/cjs/loader:1576:12)
+    at require (node:internal/modules/helpers:153:16)
+    at Object.<anonymous> (D:\New Projects\TeamNest\teamnest-back\routes\members.js:5:17)
+    at Module._compile (node:internal/modules/cjs/loader:1830:14)
+
+Node.js v24.15.0
+[31m[nodemon] app crashed - waiting for file changes before starting...[39m
+[32m[nodemon] restarting due to changes...[39m
+[32m[nodemon] starting `node index.js`[39m
+Firebase Admin initialized
+D:\New Projects\TeamNest\teamnest-back\controllers\memberController.js:199
+  listMembers,
+  ^
+
+ReferenceError: listMembers is not defined
+    at Object.<anonymous> (D:\New Projects\TeamNest\teamnest-back\controllers\memberController.js:199:3)
+    at Module._compile (node:internal/modules/cjs/loader:1830:14)
+    at Object..js (node:internal/modules/cjs/loader:1961:10)
+    at Module.load (node:internal/modules/cjs/loader:1553:32)
+    at Module._load (node:internal/modules/cjs/loader:1355:12)
+    at wrapModuleLoad (node:internal/modules/cjs/loader:255:19)
+    at Module.require (node:internal/modules/cjs/loader:1576:12)
+    at require (node:internal/modules/helpers:153:16)
+    at Object.<anonymous> (D:\New Projects\TeamNest\teamnest-back\routes\members.js:5:17)
+    at Module._compile (node:internal/modules/cjs/loader:1830:14)
+
+Node.js v24.15.0
+[31m[nodemon] app crashed - waiting for file changes before starting...[39m
+[32m[nodemon] restarting due to changes...[39m
+[32m[nodemon] starting `node index.js`[39m
+Firebase Admin initialized
+D:\New Projects\TeamNest\teamnest-back\controllers\memberController.js:199
+  listMembers,
+  ^
+
+ReferenceError: listMembers is not defined
+    at Object.<anonymous> (D:\New Projects\TeamNest\teamnest-back\controllers\memberController.js:199:3)
+    at Module._compile (node:internal/modules/cjs/loader:1830:14)
+    at Object..js (node:internal/modules/cjs/loader:1961:10)
+    at Module.load (node:internal/modules/cjs/loader:1553:32)
+    at Module._load (node:internal/modules/cjs/loader:1355:12)
+    at wrapModuleLoad (node:internal/modules/cjs/loader:255:19)
+    at Module.require (node:internal/modules/cjs/loader:1576:12)
+    at require (node:internal/modules/helpers:153:16)
+    at Object.<anonymous> (D:\New Projects\TeamNest\teamnest-back\routes\members.js:5:17)
+    at Module._compile (node:internal/modules/cjs/loader:1830:14)
+
+Node.js v24.15.0
+[31m[nodemon] app crashed - waiting for file changes before starting...[39m
+[32m[nodemon] restarting due to changes...[39m
+[32m[nodemon] starting `node index.js`[39m
+Firebase Admin initialized
+D:\New Projects\TeamNest\teamnest-back\controllers\memberController.js:199
+  listMembers,
+  ^
+
+ReferenceError: listMembers is not defined
+    at Object.<anonymous> (D:\New Projects\TeamNest\teamnest-back\controllers\memberController.js:199:3)
+    at Module._compile (node:internal/modules/cjs/loader:1830:14)
+    at Object..js (node:internal/modules/cjs/loader:1961:10)
+    at Module.load (node:internal/modules/cjs/loader:1553:32)
+    at Module._load (node:internal/modules/cjs/loader:1355:12)
+    at wrapModuleLoad (node:internal/modules/cjs/loader:255:19)
+    at Module.require (node:internal/modules/cjs/loader:1576:12)
+    at require (node:internal/modules/helpers:153:16)
+    at Object.<anonymous> (D:\New Projects\TeamNest\teamnest-back\routes\members.js:5:17)
+    at Module._compile (node:internal/modules/cjs/loader:1830:14)
+
+Node.js v24.15.0
+[31m[nodemon] app crashed - waiting for file changes before starting...[39m
+[32m[nodemon] restarting due to changes...[39m
+[32m[nodemon] starting `node index.js`[39m
+Firebase Admin initialized
+MongoDB connected: ac-fpmffvs-shard-00-00.is98bs1.mongodb.net/teamnest
+TeamNest API listening on port 5000
+[32m[nodemon] restarting due to changes...[39m
+[32m[nodemon] starting `node index.js`[39m
+Firebase Admin initialized
+MongoDB connected: ac-fpmffvs-shard-00-00.is98bs1.mongodb.net/teamnest
+TeamNest API listening on port 5000
+[stripe] STRIPE_WEBHOOK_SECRET not set — accepting unsigned webhook payload (development only).
+[stripe] STRIPE_WEBHOOK_SECRET not set — accepting unsigned webhook payload (development only).
+[32m[nodemon] restarting due to changes...[39m
+[32m[nodemon] starting `node index.js`[39m
+Firebase Admin initialized
+MongoDB connected: ac-fpmffvs-shard-00-00.is98bs1.mongodb.net/teamnest
+TeamNest API listening on port 5000
+[32m[nodemon] restarting due to changes...[39m
+[32m[nodemon] starting `node index.js`[39m
+Firebase Admin initialized
+MongoDB connected: ac-fpmffvs-shard-00-00.is98bs1.mongodb.net/teamnest
+TeamNest API listening on port 5000
+[32m[nodemon] restarting due to changes...[39m
+[32m[nodemon] starting `node index.js`[39m
+Firebase Admin initialized
+MongoDB connected: ac-fpmffvs-shard-00-00.is98bs1.mongodb.net/teamnest
+TeamNest API listening on port 5000
+[stripe] STRIPE_WEBHOOK_SECRET not set — accepting unsigned webhook payload (development only).
+[stripe] STRIPE_WEBHOOK_SECRET not set — accepting unsigned webhook payload (development only).
+[32m[nodemon] restarting due to changes...[39m
+[32m[nodemon] starting `node index.js`[39m
+Firebase Admin initialized
+MongoDB connected: ac-fpmffvs-shard-00-00.is98bs1.mongodb.net/teamnest
+TeamNest API listening on port 5000
+[stripe] STRIPE_WEBHOOK_SECRET not set — accepting unsigned webhook payload (development only).
+[stripe] STRIPE_WEBHOOK_SECRET not set — accepting unsigned webhook payload (development only).
