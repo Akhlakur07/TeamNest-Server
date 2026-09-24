@@ -1,8 +1,16 @@
 const env = require('../config/env');
+const { ZodError } = require('zod');
 
 const errorHandler = (err, req, res, next) => {
   let statusCode = err.statusCode || 500;
   let message = err.message || 'Internal server error';
+
+  if (err instanceof ZodError) {
+    statusCode = 400;
+    message = err.issues
+      .map((issue) => `${issue.path.join('.') || 'field'}: ${issue.message}`)
+      .join('; ');
+  }
 
   if (err.name === 'CastError') {
     statusCode = 400;
