@@ -15,6 +15,19 @@ const resetSchema = z.object({
   email: z.email(),
 });
 
+async function orgSummary(orgId) {
+  if (!orgId) return null;
+  const org = await Organization.findById(orgId).select('name status planId');
+  return org
+    ? {
+        id: org._id.toString(),
+        name: org.name,
+        status: org.status,
+        planId: org.planId ? org.planId.toString() : null,
+      }
+    : null;
+}
+
 async function assertAccountAccessible(user) {
   if (user.status === USER_STATUS.SUSPENDED) {
     throw new ApiError(403, 'This account has been suspended');
@@ -55,12 +68,16 @@ exports.login = async (req, res) => {
 
   await assertAccountAccessible(user);
 
-  res.json({ success: true, user: userProfile(user) });
+  res.json({ success: true, user: userProfile(user), org: await orgSummary(user.orgId) });
 };
 
 exports.me = async (req, res) => {
   await assertAccountAccessible(req.dbUser);
-  res.json({ success: true, user: userProfile(req.dbUser) });
+  res.json({
+    success: true,
+    user: userProfile(req.dbUser),
+    org: await orgSummary(req.dbUser.orgId),
+  });
 };
 
 exports.resetPassword = async (req, res) => {

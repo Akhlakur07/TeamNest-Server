@@ -2,6 +2,11 @@ const { Router } = require('express');
 const rateLimit = require('express-rate-limit');
 const authenticate = require('../middleware/authenticate');
 const { login, me, resetPassword } = require('../controllers/authController');
+const {
+  register,
+  retryCheckout,
+  registrationStatus,
+} = require('../controllers/registrationController');
 
 const router = Router();
 
@@ -21,8 +26,19 @@ const resetLimiter = rateLimit({
   message: { success: false, message: 'Too many reset requests. Try again later.' },
 });
 
+const registerLimiter = rateLimit({
+  windowMs: 60 * 60 * 1000,
+  limit: 10,
+  standardHeaders: true,
+  legacyHeaders: false,
+  message: { success: false, message: 'Too many registration attempts. Try again later.' },
+});
+
 router.post('/login', loginLimiter, login);
 router.post('/password-reset', resetLimiter, resetPassword);
+router.post('/register', registerLimiter, register);
+router.post('/retry-checkout', authenticate, registerLimiter, retryCheckout);
+router.get('/registration-status', authenticate, registrationStatus);
 router.get('/me', authenticate, me);
 
 module.exports = router;

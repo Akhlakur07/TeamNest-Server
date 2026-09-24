@@ -1,0 +1,28 @@
+
+> teamnest-back@1.0.0 dev
+> nodemon index.js
+
+[33m[nodemon] 3.1.14[39m
+[33m[nodemon] to restart at any time, enter `rs`[39m
+[33m[nodemon] watching path(s): *.*[39m
+[33m[nodemon] watching extensions: js,mjs,cjs,json[39m
+[32m[nodemon] starting `node index.js`[39m
+◇ injected env (10) from .env
+Firebase Admin initialized
+MongoDB connected: ac-fpmffvs-shard-00-00.is98bs1.mongodb.net/teamnest
+TeamNest API listening on port 5000
+[32m[nodemon] restarting due to changes...[39m
+[32m[nodemon] starting `node index.js`[39m
+◇ injected env (10) from .env
+Firebase Admin initialized
+[32m[nodemon] restarting due to changes...[39m
+[32m[nodemon] starting `node index.js`[39m
+◇ injected env (10) from .env
+Firebase Admin initialized
+MongoDB connected: ac-fpmffvs-shard-00-00.is98bs1.mongodb.net/teamnest
+TeamNest API listening on port 5000
+[32m[nodemon] restarting due to changes...[39m
+[32m[nodemon] starting `node index.js`[39m
+Firebase Admin initialized
+MongoDB connected: ac-fpmffvs-shard-00-00.is98bs1.mongodb.net/teamnest
+TeamNest API listening on port 5000
