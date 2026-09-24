@@ -15,6 +15,7 @@ const planSchema = new mongoose.Schema(
     },
     features: { type: [String], default: [] },
     isEnabled: { type: Boolean, default: true },
+    stripeProductId: { type: String, sparse: true },
     stripePriceId: { type: String, sparse: true },
   },
   { timestamps: true }

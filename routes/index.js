@@ -7,5 +7,6 @@ router.get('/health', (req, res) => {
 });
 
 router.use('/auth', require('./auth'));
+router.use('/plans', require('./plans'));
 
 module.exports = router;

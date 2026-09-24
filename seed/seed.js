@@ -2,6 +2,7 @@ const mongoose = require('mongoose');
 const { connectDB } = require('../config/db');
 const admin = require('../config/firebaseAdmin');
 const { Plan, User } = require('../models');
+const { syncStripePrice } = require('../services/stripeService');
 const { ROLES, USER_STATUS } = require('../models/enums');
 
 const DEFAULT_PLANS = [
@@ -40,6 +41,13 @@ async function seedPlans() {
     } else {
       await Plan.create(planData);
       console.log(`Plan "${planData.name}" created`);
+    }
+
+    const plan = await Plan.findOne({ slug: planData.slug });
+    if (plan.isEnabled && plan.priceCents > 0 && !plan.stripePriceId) {
+      await syncStripePrice(plan);
+      await plan.save();
+      console.log(`Stripe price synced for "${plan.name}": ${plan.stripePriceId}`);
     }
   }
 }
