@@ -9,9 +9,16 @@ try {
 
   if (getApps().length === 0) {
     const serviceAccountPath = process.env.FIREBASE_SERVICE_ACCOUNT_PATH;
+    const serviceAccountJson = process.env.FIREBASE_SERVICE_ACCOUNT_JSON;
     const googleCredentials = process.env.GOOGLE_APPLICATION_CREDENTIALS;
 
-    if (serviceAccountPath) {
+    if (serviceAccountJson) {
+      const raw = serviceAccountJson.trim();
+      const serviceAccount = raw.startsWith('{')
+        ? JSON.parse(raw)
+        : JSON.parse(Buffer.from(raw, 'base64').toString('utf8'));
+      initializeApp({ credential: cert(serviceAccount) });
+    } else if (serviceAccountPath) {
       const resolved = path.isAbsolute(serviceAccountPath)
         ? serviceAccountPath
         : path.resolve(process.cwd(), serviceAccountPath);
