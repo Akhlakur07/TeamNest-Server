@@ -6,6 +6,8 @@ const env = require('../config/env');
 const ApiError = require('../utils/ApiError');
 const { Plan, Organization, Subscription, User } = require('../models');
 const { ROLES, USER_STATUS, ORG_STATUS, SUBSCRIPTION_STATUS } = require('../models/enums');
+const { confirmCheckoutSession } = require('../services/subscriptionService');
+const { sendActivationEmail } = require('../services/emailService');
 
 const registerSchema = z.object({
   organizationName: z.string().trim().min(2, 'Organization name is required').max(100),
@@ -53,7 +55,8 @@ exports.register = async (req, res) => {
   if (existingUser) throw new ApiError(409, 'An account with this email already exists');
   if (existingOrg) throw new ApiError(409, 'An organization with this name already exists');
   if (!plan || !plan.isEnabled) throw new ApiError(400, 'Selected plan is not available');
-  if (!plan.stripePriceId) {
+  const isFreePlan = plan.priceCents === 0;
+  if (!isFreePlan && !plan.stripePriceId) {
     throw new ApiError(400, 'This plan cannot be used for checkout yet');
   }
 
@@ -72,6 +75,58 @@ exports.register = async (req, res) => {
   }
 
   const orgId = new mongoose.Types.ObjectId();
+
+  const userPayload = {
+    email,
+    name: data.adminName,
+    role: ROLES.ORG_ADMIN,
+    orgId,
+    status: USER_STATUS.ACTIVE,
+    firebaseUid: firebaseUser.uid,
+  };
+
+  if (isFreePlan) {
+    const sess = await mongoose.startSession();
+    try {
+      sess.startTransaction();
+      await Organization.create(
+        [
+          {
+            _id: orgId,
+            name: data.organizationName,
+            contactName: data.adminName,
+            contactEmail: email,
+            billingEmail: email,
+            status: ORG_STATUS.ACTIVE,
+            planId: plan._id,
+            activatedAt: new Date(),
+          },
+        ],
+        { session: sess }
+      );
+      await Subscription.create(
+        [{ orgId, planId: plan._id, status: SUBSCRIPTION_STATUS.ACTIVE }],
+        { session: sess }
+      );
+      await User.create([userPayload], { session: sess });
+      await sess.commitTransaction();
+    } catch (error) {
+      await sess.abortTransaction();
+      await deleteFirebaseUser(firebaseUser.uid);
+      console.error('Free registration transaction failed:', error);
+      throw new ApiError(502, 'Registration could not be completed. Please try again.');
+    } finally {
+      sess.endSession();
+    }
+
+    sendActivationEmail({
+      to: email,
+      orgName: data.organizationName,
+      planName: plan.name,
+    }).catch((err) => console.error('[email] activation failed:', err.message));
+
+    return res.status(201).json({ success: true, orgId: orgId.toString(), free: true });
+  }
 
   let checkout;
   try {
@@ -104,19 +159,7 @@ exports.register = async (req, res) => {
       [{ orgId, planId: plan._id, status: SUBSCRIPTION_STATUS.PENDING }],
       { session: sess }
     );
-    await User.create(
-      [
-        {
-          email,
-          name: data.adminName,
-          role: ROLES.ORG_ADMIN,
-          orgId,
-          status: USER_STATUS.ACTIVE,
-          firebaseUid: firebaseUser.uid,
-        },
-      ],
-      { session: sess }
-    );
+    await User.create([userPayload], { session: sess });
     await sess.commitTransaction();
   } catch (error) {
     await sess.abortTransaction();
@@ -135,10 +178,24 @@ exports.retryCheckout = async (req, res) => {
   const user = req.dbUser;
   if (!user.orgId) throw new ApiError(400, 'No organization linked to this account');
 
-  const org = await Organization.findById(user.orgId);
+  let org = await Organization.findById(user.orgId);
   if (!org) throw new ApiError(404, 'Organization not found');
   if (org.status !== ORG_STATUS.PENDING) {
     throw new ApiError(400, 'Only pending organizations can retry checkout');
+  }
+
+  // The checkout may have already been paid but its webhook never arrived.
+  // Activate instead of opening a duplicate session (avoid double billing).
+  await confirmCheckoutSession(org._id);
+  org = await Organization.findById(user.orgId);
+  if (org.status === ORG_STATUS.ACTIVE) {
+    return res.json({
+      success: true,
+      activated: true,
+      orgId: org._id.toString(),
+      checkoutUrl: null,
+      message: 'Your payment was confirmed and your organization is now active.',
+    });
   }
 
   const plan = await Plan.findById(org.planId);
@@ -165,8 +222,18 @@ exports.registrationStatus = async (req, res) => {
   const user = req.dbUser;
   if (!user.orgId) throw new ApiError(400, 'No organization linked to this account');
 
-  const org = await Organization.findById(user.orgId);
+  let org = await Organization.findById(user.orgId);
   if (!org) throw new ApiError(404, 'Organization not found');
+
+  // Payments are confirmed primarily via webhook. If the webhook has not been
+  // delivered yet, verify the checkout session with Stripe directly so a paid
+  // organization is never left pending.
+  if (org.status === ORG_STATUS.PENDING && org.checkoutSessionId) {
+    const refreshed = await confirmCheckoutSession(org._id);
+    if (refreshed.processed) {
+      org = await Organization.findById(user.orgId);
+    }
+  }
 
   const subscription = await Subscription.findOne({ orgId: org._id, isCurrent: true });
 

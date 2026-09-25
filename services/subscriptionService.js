@@ -8,6 +8,7 @@ const {
   TRANSACTION_STATUS,
   TRANSACTION_TYPE,
 } = require('../models/enums');
+const { sendActivationEmail, sendPaymentReceipt } = require('./emailService');
 
 function isDuplicateKeyError(err) {
   return !!err && err.code === 11000;
@@ -91,7 +92,11 @@ async function handleCheckoutCompleted(event) {
 
   const org = await resolveOrganization(session);
   if (!org) return { processed: false, ignored: true };
-  if (org.status === ORG_STATUS.ACTIVE) {
+
+  const wasPending = org.status === ORG_STATUS.PENDING;
+  const isPlanSwitch = org.status === ORG_STATUS.ACTIVE && org.checkoutSessionId === session.id;
+  if (!wasPending && !isPlanSwitch) {
+    // Already active and this is not the plan-switch checkout we initiated.
     return { processed: false, ignored: true };
   }
 
@@ -109,12 +114,15 @@ async function handleCheckoutCompleted(event) {
   }
   const plan = priceId ? await Plan.findOne({ stripePriceId: priceId }) : null;
 
-  return processInTransaction(event, org, async (t) => {
-    org.status = ORG_STATUS.ACTIVE;
-    org.activatedAt = new Date();
+  const result = await processInTransaction(event, org, async (t) => {
+    if (wasPending) {
+      org.status = ORG_STATUS.ACTIVE;
+      org.activatedAt = new Date();
+    }
     if (session.customer) org.stripeCustomerId = session.customer;
     if (stripeSubscriptionId) org.stripeSubscriptionId = stripeSubscriptionId;
     if (plan) org.planId = plan._id;
+    if (org.checkoutSessionId) org.checkoutSessionId = null;
     await org.save({ session: t });
 
     const current = await Subscription.findOne({ orgId: org._id, isCurrent: true }).session(t);
@@ -126,6 +134,55 @@ async function handleCheckoutCompleted(event) {
       if (periodEnd) current.currentPeriodEnd = periodEnd;
       await current.save({ session: t });
     }
+  });
+
+  if (result.processed && wasPending) {
+    sendActivationEmail({
+      to: org.contactEmail,
+      orgName: org.name,
+      planName: plan?.name || null,
+    }).catch((err) => console.error('[email] activation failed:', err.message));
+  }
+  return result;
+}
+
+// Direct confirmation fallback: when webhook delivery is delayed or unavailable,
+// the pending org can still be activated by verifying the checkout session with
+// Stripe directly. Reuses the already-tested activation logic (and its WebhookLog
+// idempotency) by feeding the retrieved session through handleCheckoutCompleted.
+const CONFIRM_THROTTLE_MS = 10 * 1000;
+const confirmAttempts = new Map();
+
+async function confirmCheckoutSession(orgId) {
+  const org = await Organization.findById(orgId);
+  if (!org || !org.checkoutSessionId) {
+    return { processed: false, ignored: true, reason: 'no_pending_session' };
+  }
+
+  const sessionId = org.checkoutSessionId;
+  const now = Date.now();
+  const last = confirmAttempts.get(sessionId) || 0;
+  if (now - last < CONFIRM_THROTTLE_MS) {
+    return { processed: false, throttled: true };
+  }
+  confirmAttempts.set(sessionId, now);
+  if (confirmAttempts.size > 500) confirmAttempts.clear();
+
+  let session;
+  try {
+    session = await stripe.checkout.sessions.retrieve(sessionId);
+  } catch (error) {
+    console.error('[stripe] checkout confirmation failed:', error.message);
+    return { processed: false, ignored: true, reason: 'retrieve_failed' };
+  }
+  if (session.payment_status === 'unpaid') {
+    return { processed: false, ignored: true, reason: 'unpaid' };
+  }
+
+  return handleCheckoutCompleted({
+    id: `confirm_${orgId}_${sessionId}`,
+    type: 'checkout.session.completed',
+    data: { object: session },
   });
 }
 
@@ -144,7 +201,7 @@ async function handleInvoicePaid(event) {
   const period = invoice.lines?.data?.[0]?.period || {};
   const amount = invoice.amount_paid ?? 0;
 
-  return processInTransaction(event, org, async (t) => {
+  const result = await processInTransaction(event, org, async (t) => {
     const current = await Subscription.findOne({ orgId: org._id, isCurrent: true }).session(t);
     const isFirstPayment =
       !hasPriorPayment ||
@@ -224,6 +281,21 @@ async function handleInvoicePaid(event) {
       { session: t }
     );
   });
+
+  if (result.processed) {
+    sendPaymentReceipt({
+      to: org.contactEmail,
+      orgName: org.name,
+      planName: plan?.name || null,
+      amountCents: amount,
+      currency: invoice.currency || 'usd',
+      invoiceNumber: `INV-${invoice.number || invoice.id.slice(-12)}`,
+      invoiceUrl: invoice.hosted_invoice_url || null,
+      periodStart: period.start ? timestampToDate(period.start) : null,
+      periodEnd: period.end ? timestampToDate(period.end) : null,
+    }).catch((err) => console.error('[email] receipt failed:', err.message));
+  }
+  return result;
 }
 
 // invoice.payment_failed — mark subscription failed, ledger FAILED entry
@@ -422,4 +494,5 @@ module.exports = {
   handleSubscriptionUpdated,
   handleSubscriptionDeleted,
   handleChargeRefunded,
+  confirmCheckoutSession,
 };

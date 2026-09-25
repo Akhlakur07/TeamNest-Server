@@ -6,6 +6,7 @@ const { Organization, User, Invitation } = require('../models');
 const { ROLES, ORG_STATUS, INVITATION_STATUS } = require('../models/enums');
 const { acceptInviteByToken, memberSummary } = require('../services/memberService');
 const { userProfile } = require('../utils/serializers');
+const { sendInvitationEmail } = require('../services/emailService');
 
 const INVITE_TTL_MS = 7 * 24 * 60 * 60 * 1000;
 
@@ -76,18 +77,28 @@ exports.inviteMember = async (req, res) => {
     expiresAt: new Date(Date.now() + INVITE_TTL_MS),
   });
 
+  const url = await inviteUrl(invite);
+  const invitePublic = {
+    id: invite._id.toString(),
+    email: invite.email,
+    role: invite.role,
+    status: invite.status,
+    expiresAt: invite.expiresAt,
+    url,
+  };
+
   res.status(201).json({
     success: true,
     message: `Invitation sent to ${normalized}.`,
-    invite: {
-      id: invite._id.toString(),
-      email: invite.email,
-      role: invite.role,
-      status: invite.status,
-      expiresAt: invite.expiresAt,
-      url: await inviteUrl(invite),
-    },
+    invite: invitePublic,
   });
+
+  await sendInvitationEmail({
+    to: normalized,
+    orgName: org.name,
+    inviteUrl: url,
+    expiresAt: invite.expiresAt,
+  }).catch((err) => console.error('[email] invitation failed:', err.message));
 };
 
 exports.listInvitations = async (req, res) => {

@@ -15,11 +15,19 @@ function isDateString(value) {
   return !Number.isNaN(Date.parse(value));
 }
 
+const emptyToMissing = (value) => (value === '' ? undefined : value);
+
 const listQuerySchema = z.object({
-  type: z.enum(TYPE_VALUES).optional(),
-  status: z.enum(STATUS_VALUES).optional(),
-  from: z.string().refine(isDateString, 'Invalid "from" date').optional(),
-  to: z.string().refine(isDateString, 'Invalid "to" date').optional(),
+  type: z.preprocess(emptyToMissing, z.enum(TYPE_VALUES).optional()),
+  status: z.preprocess(emptyToMissing, z.enum(STATUS_VALUES).optional()),
+  from: z.preprocess(
+    emptyToMissing,
+    z.string().refine(isDateString, 'Invalid "from" date').optional()
+  ),
+  to: z.preprocess(
+    emptyToMissing,
+    z.string().refine(isDateString, 'Invalid "to" date').optional()
+  ),
   page: z.coerce.number().int().min(1).default(1),
   limit: z.coerce.number().int().min(1).max(100).default(25),
 });

@@ -11,6 +11,14 @@ const env = {
   DB_NAME: process.env.DB_NAME || 'teamnest',
   STRIPE_SECRET_KEY: process.env.PAYMENT_GATEWAY_KEY,
   STRIPE_WEBHOOK_SECRET: process.env.STRIPE_WEBHOOK_SECRET || '',
+  WEB_API_KEY: process.env.WEB_API_KEY || '',
+  SMTP_HOST: process.env.SMTP_HOST || '',
+  SMTP_PORT: Number(process.env.SMTP_PORT) || 587,
+  SMTP_USER: process.env.SMTP_USER || '',
+  SMTP_PASS: process.env.SMTP_PASS || '',
+  MAIL_FROM: process.env.MAIL_FROM || 'TeamNest <no-reply@teamnest.dev>',
+  TRUST_PROXY: process.env.TRUST_PROXY === 'true',
+  RATE_LIMIT_MAX: Number(process.env.RATE_LIMIT_MAX) || 600,
 };
 
 const required = ['MONGO_URI', 'STRIPE_SECRET_KEY'];

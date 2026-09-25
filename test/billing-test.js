@@ -106,14 +106,37 @@ async function login(email, password) {
   check('change-plan -> 200', change.status === 200, `got ${change.status} ${JSON.stringify(change.body)}`);
   let remoteReload = await stripe.subscriptions.retrieve(remoteSub.id);
   check('Stripe subscription now on enterprise price', remoteReload.items.data[0].price.id === enterprise.stripePriceId, remoteReload.items.data[0].price.id);
+  const orgReload = await Organization.findById(orgId);
+  const subReload = await Subscription.findById(sub._id);
+  check('org plan synced locally immediately', orgReload?.planId?.toString() === enterprise._id.toString(), `got ${orgReload?.planId}`);
+  check('subscription plan synced locally immediately', subReload?.planId?.toString() === enterprise._id.toString(), `got ${subReload?.planId}`);
+  const txUpgManual = await mongoose.connection.collection('transactions').findOne({ orgId: org._id, type: 'upgrade' });
+  check('UPGRADE transaction logged synchronously', !!txUpgManual && txUpgManual?.metadata?.to === enterprise._id.toString(), JSON.stringify(txUpgManual?.metadata));
 
   console.log('\n--- change plan guards ---');
-  const same = await api.post('/billing/change-plan', { planId: pro._id.toString() }, token);
-  check('same plan -> 400', same.status === 400, `got ${same.status} ${JSON.stringify(same.body)}`);
+  const same = await api.post('/billing/change-plan', { planId: enterprise._id.toString() }, token);
+  check('already on plan -> 400', same.status === 400, `got ${same.status} ${JSON.stringify(same.body)}`);
   const toFree = await api.post('/billing/change-plan', { planId: free._id.toString() }, token);
   check('free plan (no price) -> 400', toFree.status === 400, `got ${toFree.status} ${JSON.stringify(toFree.body)}`);
   const badShape = await api.post('/billing/change-plan', {}, token);
   check('missing planId -> 400', badShape.status === 400, `got ${badShape.status}`);
+
+  console.log('\n--- free org upgrade via hosted checkout ---');
+  const freeReg = await api.post('/auth/register', {
+    organizationName: `FreeUpgrade ${stamp}`,
+    adminName: 'Free Upgrade Admin',
+    email: `freeup-${stamp}@example.com`,
+    password: 'Passw0rd!123',
+    planId: free._id.toString(),
+  });
+  check('free org register -> 201', freeReg.status === 201, JSON.stringify(freeReg.body));
+  const freeOrgDoc = await Organization.findById(freeReg.body.orgId);
+  check('free org is ACTIVE', freeOrgDoc?.status === 'ACTIVE', `got ${freeOrgDoc?.status}`);
+  const freeToken = await login(`freeup-${stamp}@example.com`, 'Passw0rd!123');
+  const upgrade = await api.post('/billing/change-plan', { planId: pro._id.toString() }, freeToken);
+  check('free -> paid returns hosted checkoutUrl', upgrade.status === 200 && typeof upgrade.body?.checkoutUrl === 'string' && upgrade.body.checkoutUrl.startsWith('https://'), JSON.stringify(upgrade.body));
+  const freeOrgAfterUpgrade = await Organization.findById(freeReg.body.orgId);
+  check('checkout session stored for plan change', typeof freeOrgAfterUpgrade?.checkoutSessionId === 'string' && freeOrgAfterUpgrade.checkoutSessionId.startsWith('cs_'));
 
   console.log('\n--- cancel at period end + reactivate ---');
   const cancel = await api.post('/billing/cancel', {}, token);

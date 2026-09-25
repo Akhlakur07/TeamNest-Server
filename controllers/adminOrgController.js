@@ -6,9 +6,11 @@ const { memberSummary } = require('../services/memberService');
 
 const STATUS_VALUES = Object.values(ORG_STATUS);
 
+const emptyToMissing = (value) => (value === '' ? undefined : value);
+
 const listQuerySchema = z.object({
-  search: z.string().trim().max(120).optional(),
-  status: z.enum(STATUS_VALUES).optional(),
+  search: z.preprocess(emptyToMissing, z.string().trim().max(120).optional()),
+  status: z.preprocess(emptyToMissing, z.enum(STATUS_VALUES).optional()),
   page: z.coerce.number().int().min(1).default(1),
   limit: z.coerce.number().int().min(1).max(100).default(25),
 });

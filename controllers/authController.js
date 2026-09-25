@@ -24,13 +24,19 @@ const joinSchema = z.object({
 
 async function orgSummary(orgId) {
   if (!orgId) return null;
-  const org = await Organization.findById(orgId).select('name status planId');
+  const org = await Organization.findById(orgId).select(
+    'name status planId contactName contactEmail phone billingEmail'
+  );
   return org
     ? {
         id: org._id.toString(),
         name: org.name,
         status: org.status,
         planId: org.planId ? org.planId.toString() : null,
+        contactName: org.contactName,
+        contactEmail: org.contactEmail,
+        phone: org.phone,
+        billingEmail: org.billingEmail,
       }
     : null;
 }

@@ -92,16 +92,24 @@ async function firebaseToken(email, password) {
   });
   check('duplicate org name -> 409', dupOrg.status === 409, `got ${dupOrg.status}`);
 
-  // 4. free plan (no stripe price) -> 400
-  console.log('\n--- free plan blocked ---');
+  // 4. free plan -> registers without checkout (201, org ACTIVE, no checkoutUrl)
+  console.log('\n--- free plan registration ---');
+  const freeEmail = `regfree-${Date.now()}@example.com`;
   const freeReg = await api.post('/auth/register', {
     organizationName: `FreeCorp ${Date.now()}`,
     adminName: 'Reg Admin 4',
-    email: `reg4-${Date.now()}@example.com`,
+    email: freeEmail,
     password: 'Passw0rd!123',
     planId: free._id.toString(),
   });
-  check('free plan -> 400', freeReg.status === 400, `got ${freeReg.status} ${JSON.stringify(freeReg.body)}`);
+  check('free plan -> 201', freeReg.status === 201, `got ${freeReg.status} ${JSON.stringify(freeReg.body)}`);
+  check('free plan has no checkoutUrl', freeReg.body?.checkoutUrl === null || freeReg.body?.checkoutUrl === undefined, `got ${freeReg.body?.checkoutUrl}`);
+  const freeOrg = await Organization.findById(freeReg.body?.orgId);
+  check('free org is ACTIVE', freeOrg?.status === 'ACTIVE', `got ${freeOrg?.status}`);
+  const freeSub = await Subscription.findOne({ orgId: freeReg.body?.orgId });
+  check('free subscription is ACTIVE', freeSub?.status === 'ACTIVE', `got ${freeSub?.status}`);
+  const freeUser = await User.findOne({ email: freeEmail });
+  check('free org_admin user created', !!freeUser && freeUser.role === 'org_admin');
 
   // 5. login -> returns org with PENDING
   console.log('\n--- login returns org ---');

@@ -12,6 +12,7 @@ router.get('/current', billing.currentSubscription);
 
 router.post('/portal', authorize(ROLES.ORG_ADMIN), billing.billingPortal);
 router.post('/change-plan', authorize(ROLES.ORG_ADMIN), billing.changePlan);
+router.post('/confirm-change', authorize(ROLES.ORG_ADMIN), billing.confirmPendingPlan);
 router.post('/cancel', authorize(ROLES.ORG_ADMIN), billing.cancelAtPeriodEnd);
 router.post('/reactivate', authorize(ROLES.ORG_ADMIN), billing.reactivateSubscription);
 

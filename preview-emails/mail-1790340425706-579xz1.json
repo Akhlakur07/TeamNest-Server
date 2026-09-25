@@ -1,0 +1,17 @@
+{
+  "from": {
+    "address": "no-reply@teamnest.dev",
+    "name": "TeamNest"
+  },
+  "to": [
+    {
+      "address": "mail-member-1790340420588@example.com",
+      "name": ""
+    }
+  ],
+  "subject": "You're invited to join MailOrg 1790340420588 on TeamNest",
+  "html": "\n    <div style=\"font-family: Arial, Helvetica, sans-serif; max-width: 560px; margin: 0 auto; color: #0f172a;\">\n      <div style=\"border-bottom: 1px solid #e2e8f0; padding: 16px 24px; font-weight: 600; font-size: 18px;\">TeamNest</div>\n      <div style=\"padding: 24px;\">\n        <h1 style=\"font-size: 20px; margin: 0 0 12px;\">You have been invited</h1>\n        \n      <p>MailOrg 1790340420588 has invited you to join their workspace on TeamNest.</p>\n      <p style=\"margin: 20px 0;\">\n        <a href=\"http://localhost:5173/invite/accept?token=504490783018f039ca313abd69f17ac4fa1d12fc7d2d0534ba9f0cbacf60bae6\" style=\"background:#4f46e5;color:#ffffff;padding:10px 18px;border-radius:6px;text-decoration:none;font-weight:600;\">Accept invitation</a>\n      </p>\n      <p>Or copy this link into your browser:</p>\n      <p style=\"word-break: break-all; background:#f8fafc; padding:12px; border-radius:6px; font-size:12px;\">http://localhost:5173/invite/accept?token=504490783018f039ca313abd69f17ac4fa1d12fc7d2d0534ba9f0cbacf60bae6</p>\n      <p>This invitation expires on 10/2/2026.</p>\n      \n      </div>\n      <div style=\"border-top: 1px solid #e2e8f0; padding: 16px 24px; font-size: 12px; color: #64748b;\">\n        You are receiving this email because of activity on your TeamNest account.\n      </div>\n    </div>\n  ",
+  "text": "You have been invited to join MailOrg 1790340420588 on TeamNest.\n\nOpen this link to accept: http://localhost:5173/invite/accept?token=504490783018f039ca313abd69f17ac4fa1d12fc7d2d0534ba9f0cbacf60bae6\n\nThis invitation expires on 10/2/2026.",
+  "headers": {},
+  "messageId": "<80a7f33a-8d68-faf8-b94d-89690b5c2f7f@teamnest.dev>"
+}

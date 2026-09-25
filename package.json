@@ -7,7 +7,7 @@
     "dev": "nodemon index.js",
     "start": "node index.js",
     "seed": "node seed/seed.js",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "node test/run-all.js"
   },
   "keywords": [],
   "author": "",
@@ -19,6 +19,7 @@
     "express": "^5.2.1",
     "express-rate-limit": "^8.7.0",
     "firebase-admin": "^14.5.0",
+    "helmet": "^8.3.0",
     "mongodb": "^7.6.0",
     "mongoose": "^9.10.2",
     "nodemailer": "^10.0.10",
