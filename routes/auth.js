@@ -6,6 +6,7 @@ const {
   register,
   retryCheckout,
   registrationStatus,
+  registrationStatusPublic,
 } = require('../controllers/registrationController');
 
 const router = Router();
@@ -40,6 +41,7 @@ router.post('/register', registerLimiter, register);
 router.post('/join', registerLimiter, join);
 router.post('/retry-checkout', authenticate, registerLimiter, retryCheckout);
 router.get('/registration-status', authenticate, registrationStatus);
+router.get('/registration/status', registerLimiter, registrationStatusPublic);
 router.get('/me', authenticate, me);
 
 module.exports = router;

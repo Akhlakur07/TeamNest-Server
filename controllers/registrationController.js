@@ -218,6 +218,35 @@ exports.retryCheckout = async (req, res) => {
   res.json({ success: true, orgId: org._id.toString(), checkoutUrl: checkout.url });
 };
 
+exports.registrationStatusPublic = async (req, res) => {
+  const { orgId } = req.query;
+  if (!orgId) throw new ApiError(400, 'orgId is required');
+  if (!mongoose.Types.ObjectId.isValid(orgId)) throw new ApiError(400, 'Invalid orgId');
+
+  let org = await Organization.findById(orgId);
+  if (!org) throw new ApiError(404, 'Organization not found');
+
+  if (org.status === ORG_STATUS.PENDING && org.checkoutSessionId) {
+    const refreshed = await confirmCheckoutSession(org._id);
+    if (refreshed.processed) {
+      org = await Organization.findById(orgId);
+    }
+  }
+
+  const subscription = await Subscription.findOne({ orgId: org._id, isCurrent: true });
+
+  res.json({
+    success: true,
+    organization: {
+      id: org._id.toString(),
+      name: org.name,
+      status: org.status,
+      planId: org.planId ? org.planId.toString() : null,
+    },
+    subscription: subscription ? { status: subscription.status } : null,
+  });
+};
+
 exports.registrationStatus = async (req, res) => {
   const user = req.dbUser;
   if (!user.orgId) throw new ApiError(400, 'No organization linked to this account');
